@@ -1,15 +1,12 @@
-
 import passport from "passport";
 import { Strategy as GoogleStrategy, Profile } from "passport-google-oauth20";
 import dotenv from "dotenv";
-import User from "../models/User.js";
-// import { Document } from "mongoose";
+import mongoose from "mongoose";
+import User, { IUser } from "../models/User";
 
 dotenv.config();
 
-// type UserDoc = IUser & Document;
-
-// 1. Add proper error handling and type checking for environment variables
+// 1. Validate Environment Variables
 if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
   throw new Error("Missing required Google OAuth credentials");
 }
@@ -30,23 +27,22 @@ passport.use(
     ) => {
       try {
         let user = await User.findOne({ googleId: profile.id });
-        
+
         if (!user) {
           if (!profile.emails?.[0]?.value) {
             return done(new Error("Email is required"), null);
           }
-          
+
           user = new User({
             googleId: profile.id,
             name: profile.displayName || "Unknown",
             email: profile.emails[0].value,
             profileImage: profile.photos?.[0]?.value || null,
-            role: "user" // Add default role
+            role: "user",
           });
           await user.save();
         }
 
-        // Return user without token - we'll generate it in the callback
         return done(null, user);
       } catch (error) {
         console.error("Error authenticating with Google:", error);
@@ -56,25 +52,21 @@ passport.use(
   )
 );
 
-// 5. Improve type safety in serialization
-passport.serializeUser((user: Express.User, done) => {
-  if (!user._id) {
-    return done(new Error("User ID not found"), null);
-  }
-  done(null, user._id);
+// 5. Fix serializeUser with proper ID type
+passport.serializeUser((user: any, done) => {
+  done(null, user._id); // ✅ Ensure ID is stored as a string
 });
 
-passport.deserializeUser(async (id: string, done: (err: any, user?: Express.User | null) => void) => {
+passport.deserializeUser(async (id: string, done) => {
   try {
     const user = await User.findById(id);
     if (!user) {
       return done(new Error("User not found"), null);
     }
-    done(null, user as unknown as Express.User);
+    done(null, user as any);
   } catch (error) {
     done(error as Error, null);
   }
 });
-
 
 export default passport;

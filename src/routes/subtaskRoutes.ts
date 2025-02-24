@@ -4,8 +4,8 @@ import {
   getSubtasks,
   updateSubtask,
   deleteSubtask,
-} from "../controllers/subtaskController.js";
-import jwtAuth from "../middlewares/jwtAuth.js";
+} from "../controllers/subtaskController";
+import jwtAuth from "../middlewares/jwtAuth";
 
 const router = Router();
 

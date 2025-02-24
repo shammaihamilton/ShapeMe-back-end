@@ -1,5 +1,5 @@
 import mongoose, { Schema, Document } from "mongoose";
-import Subtask from "./Subtask.js"; // ✅ Import Subtask model
+import Subtask from "./Subtask"; // ✅ Import Subtask model
 
 // Enum for Task Status
 export enum TaskState {

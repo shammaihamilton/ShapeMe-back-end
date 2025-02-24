@@ -1,4 +1,4 @@
-// models/Token.ts
+// models/Token
 
 import mongoose, { Schema, Document } from "mongoose";
 

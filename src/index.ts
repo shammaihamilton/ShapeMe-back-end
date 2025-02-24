@@ -5,12 +5,12 @@ import logger from "morgan";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
 import dotenv from "dotenv";
-import connectDb from "./database/connectDb.js";
+import connectDb from "./database/connectDb";
 import passport from "passport"; 
 import session from "express-session";
-import authRouter from "./routes/authRouter.js";
-import "./middleware/googleAuth.js"; 
-import { errorHandler } from "./middlewares/errorHandler.js";
+import authRouter from "./routes/authRouter";
+import "./middlewares/googleAuth"; 
+import { errorHandler } from "./middlewares/errorHandler";
 
 // Load environment variables
 dotenv.config();

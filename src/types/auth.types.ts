@@ -3,7 +3,7 @@ export interface AuthRequest extends Request {
   }
   
   export interface JWTPayload {
-    id: string;
+    id: string | undefined;
     role: string;
   }
   

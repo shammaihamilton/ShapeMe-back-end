@@ -5,8 +5,8 @@ import {
   login,
   logOut,
   googleAuthCallback,
-} from "../controllers/authController.js";
-import jwtAuth from "../middlewares/jwtAuth.js";
+} from "../controllers/authController";
+import jwtAuth from "../middlewares/jwtAuth";
 
 const router = Router();
 

@@ -1,5 +1,5 @@
 import mongoose, { Schema, Document } from "mongoose";
-import Task from "./Task.js"; // Import Task model
+import Task from "./Task"; // Import Task model
 
 // Enum for Goal Status
 export enum GoalState {

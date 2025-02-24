@@ -1,7 +1,7 @@
 import { Router } from "express";
-import { createGoal, getGoals, updateGoal, deleteGoal } from "../controllers/goalController.js";
+import { createGoal, getGoals, updateGoal, deleteGoal } from "../controllers/goalController";
 
-import jwtAuth from "../middlewares/jwtAuth.js";
+import jwtAuth from "../middlewares/jwtAuth";
 
 const router = Router();
 

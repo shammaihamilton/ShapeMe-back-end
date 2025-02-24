@@ -1,10 +1,9 @@
 import { Request, Response, NextFunction, RequestHandler } from "express";
 import crypto from "crypto";
-import nodemailer from "nodemailer";
 import { hash, compare } from "bcrypt";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
-import User, { UserDocument, IUser } from "../models/User"; // adjust the path as needed
+import User, { IUser } from "../models/User";
 import Token from "../models/Token"; // adjust the path as needed
 import { JWTPayload } from "../types/auth.types"; // adjust the path as needed
 import transporter from "../config/transporter";
@@ -27,7 +26,7 @@ export const googleAuthCallback: RequestHandler = async (
   next: NextFunction
 ) => {
   try {
-    const user = req.user as UserDocument;
+    const user = req.user;
     if (!user) {
       res.status(400).json({ message: "Google authentication failed" });
       return;
@@ -37,16 +36,19 @@ export const googleAuthCallback: RequestHandler = async (
       throw new Error("JWT_SECRET is not defined");
     }
 
+    const userObject = (user as IUser & Document).toObject();
     const payload: JWTPayload = {
-      id: user.id, // using the virtual getter (user.id) which returns a string
-      role: user.role,
+      id: userObject.id, // ✅ TypeScript now recognizes `id`
+      role: userObject.role, // ✅ TypeScript now recognizes `role`
     };
 
     if (typeof process.env.JWT_SECRET !== "string") {
       throw new Error("JWT_SECRET must be a string");
     }
 
-    const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "3h" });
+    const token = jwt.sign(payload, process.env.JWT_SECRET, {
+      expiresIn: "3h",
+    });
 
     res.cookie("token", token, {
       httpOnly: true,
@@ -133,7 +135,8 @@ export const login = async (
 
     if (!user.password) {
       res.status(400).json({
-        message: "This account was created with Google. Please use Google login.",
+        message:
+          "This account was created with Google. Please use Google login.",
       });
       return;
     }
@@ -148,9 +151,13 @@ export const login = async (
       throw new Error("JWT_SECRET is not defined");
     }
 
-    const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, {
-      expiresIn: "3h",
-    });
+    const token = jwt.sign(
+      { id: user._id, role: user.role },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: "3h",
+      }
+    );
 
     res.cookie("token", token, {
       httpOnly: true,
